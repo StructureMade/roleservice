@@ -63,6 +63,47 @@ public class RoleService {
     }
 
     @Transactional
+    public int updateRole(String roleid, String name, List<PermissionsArray> permissionsUpdate, String scholid) {
+        try {
+            List<Role> schoolRoles = schoolRepository.getOne(scholid).getRoles();
+            Role role = roleRepository.getOne(roleid);
+            List<Permissions> perms = role.getPermissions();
+            boolean existsPerm = false;
+            boolean roleExists = false;
+            for (Role schoolrole: schoolRoles) {
+                if (schoolrole.getId().equals(role.getId())){
+                    roleExists = true;
+                }
+            }
+            if (role.getName().length() == 0 || !roleExists) {
+                return 0;
+            }
+            role.setName(name);
+            if (permissionsUpdate.size() > 0) {
+                for (PermissionsArray permUpdate : permissionsUpdate) {
+                    for (Permissions perm : perms) {
+                        if (permUpdate.getId().equals(perm.getId())) {
+                            existsPerm = true;
+                        }
+                    }
+                    Permissions permission = permissionRepository.getOne(permUpdate.getId());
+                    if (!existsPerm) {
+                        perms.add(permission);
+                    } else {
+                        perms.remove(permission);
+                    }
+                }
+                role.setPermissions(perms);
+            }
+            roleRepository.save(role);
+            return 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 2;
+        }
+    }
+
+    @Transactional
     public Object getAllRoles(String schoolid) {
         GetRolesJson getRolesJson = new GetRolesJson();
         School school = schoolRepository.getOne(schoolid);
@@ -84,7 +125,7 @@ public class RoleService {
             }
             getRolesJson.setRoles(roles);
             return getRolesJson;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

@@ -1,6 +1,7 @@
 package de.structuremade.ms.roleservice.api.routes;
 
 import de.structuremade.ms.roleservice.api.json.CreateRoleJson;
+import de.structuremade.ms.roleservice.api.json.UpdateRoleJson;
 import de.structuremade.ms.roleservice.api.json.answer.GetRolesJson;
 import de.structuremade.ms.roleservice.api.service.RoleService;
 import de.structuremade.ms.roleservice.util.JWTUtil;
@@ -31,6 +32,15 @@ public class RoleRoute {
             case 1:
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 break;
+        }
+    }
+
+    @PutMapping("/update")
+    public void updateRole(@RequestBody UpdateRoleJson roleJson, HttpServletResponse response, HttpServletRequest request){
+        switch (roleService.updateRole(roleJson.getId(), roleJson.getName(), roleJson.getPermissions(), jwtUtil.extractSpecialClaim(request.getHeader("Authorization").substring(7), "schoolid"))){
+            case 0 -> response.setStatus(HttpStatus.NOT_FOUND.value());
+            case 1 -> response.setStatus(HttpStatus.OK.value());
+            case 2 -> response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
