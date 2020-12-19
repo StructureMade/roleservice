@@ -1,7 +1,9 @@
 package de.structuremade.ms.roleservice.api.routes;
 
+import com.google.gson.Gson;
 import de.structuremade.ms.roleservice.api.json.CreateRoleJson;
 import de.structuremade.ms.roleservice.api.json.UpdateRoleJson;
+import de.structuremade.ms.roleservice.api.json.answer.GetAllPermissions;
 import de.structuremade.ms.roleservice.api.json.answer.GetRolesJson;
 import de.structuremade.ms.roleservice.api.service.RoleService;
 import de.structuremade.ms.roleservice.util.JWTUtil;
@@ -41,6 +43,19 @@ public class RoleRoute {
             case 0 -> response.setStatus(HttpStatus.NOT_FOUND.value());
             case 1 -> response.setStatus(HttpStatus.OK.value());
             case 2 -> response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+    @GetMapping("/getallperms")
+    public Object getAllPermissions(HttpServletResponse response, HttpServletRequest request){
+        Gson gson = new Gson();
+        GetAllPermissions gap = roleService.getAllPermissions();
+        if (gap == null){
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return null;
+        }else {
+            response.setStatus(HttpStatus.OK.value());
+            return gson.toJson(gap);
         }
     }
 

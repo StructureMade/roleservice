@@ -1,5 +1,6 @@
 package de.structuremade.ms.roleservice.api.service;
 
+import de.structuremade.ms.roleservice.api.json.answer.GetAllPermissions;
 import de.structuremade.ms.roleservice.api.json.answer.GetRolesJson;
 import de.structuremade.ms.roleservice.api.json.answer.arrays.PermissionsArray;
 import de.structuremade.ms.roleservice.api.json.answer.arrays.RoleArray;
@@ -70,8 +71,8 @@ public class RoleService {
             List<Permissions> perms = role.getPermissions();
             boolean existsPerm = false;
             boolean roleExists = false;
-            for (Role schoolrole: schoolRoles) {
-                if (schoolrole.getId().equals(role.getId())){
+            for (Role schoolrole : schoolRoles) {
+                if (schoolrole.getId().equals(role.getId())) {
                     roleExists = true;
                 }
             }
@@ -126,6 +127,23 @@ public class RoleService {
             getRolesJson.setRoles(roles);
             return getRolesJson;
         } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public GetAllPermissions getAllPermissions() {
+        try {
+            GetAllPermissions getAllPermissions = new GetAllPermissions();
+            List<Permissions> permissions = permissionRepository.findAllByMasterPerms(false);
+            List<PermissionsArray> permissionsArrays = new ArrayList<>();
+            for (Permissions perms : permissions) {
+                PermissionsArray permissionsArray = new PermissionsArray(perms);
+                permissionsArrays.add(permissionsArray);
+            }
+            getAllPermissions.setPermissions(permissionsArrays);
+            return getAllPermissions;
+        }catch (Exception e){
             e.printStackTrace();
             return null;
         }
