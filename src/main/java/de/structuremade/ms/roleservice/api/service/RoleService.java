@@ -1,5 +1,6 @@
 package de.structuremade.ms.roleservice.api.service;
 
+import de.structuremade.ms.roleservice.api.json.SetRoleJson;
 import de.structuremade.ms.roleservice.api.json.answer.GetAllPermissions;
 import de.structuremade.ms.roleservice.api.json.answer.GetRolesJson;
 import de.structuremade.ms.roleservice.api.json.answer.arrays.PermissionsArray;
@@ -17,7 +18,9 @@ import de.structuremade.ms.roleservice.util.database.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,8 +93,6 @@ public class RoleService {
                     Permissions permission = permissionRepository.getOne(permUpdate.getId());
                     if (!existsPerm) {
                         perms.add(permission);
-                    } else {
-                        perms.remove(permission);
                     }
                 }
                 role.setPermissions(perms);
@@ -143,9 +144,38 @@ public class RoleService {
             }
             getAllPermissions.setPermissions(permissionsArrays);
             return getAllPermissions;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Transactional
+    public int setRole(String userid, String schoolid, List<String> roles) {
+        try {
+            User user = userRepository.getOne(userid);
+            try {
+                if (user.getId().length() > 0) {
+                    return 0;
+                }
+            } catch (Exception e) {
+                return 0;
+            }
+            List<Role> userRoles = user.getRoles();
+            School school = schoolRepository.getOne(schoolid);
+            List<Role> schoolRoles = school.getRoles();
+            for (String role : roles) {
+                for (Role schoolRole : schoolRoles) {
+                    Role setRole = roleRepository.getOne(role);
+                    if (schoolRole.getId().equals(setRole.getId())) {
+                        userRoles.add(setRole);
+                    }
+                }
+            }
+            return 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 2;
         }
     }
 }

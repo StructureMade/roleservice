@@ -2,6 +2,7 @@ package de.structuremade.ms.roleservice.api.routes;
 
 import com.google.gson.Gson;
 import de.structuremade.ms.roleservice.api.json.CreateRoleJson;
+import de.structuremade.ms.roleservice.api.json.SetRoleJson;
 import de.structuremade.ms.roleservice.api.json.UpdateRoleJson;
 import de.structuremade.ms.roleservice.api.json.answer.GetAllPermissions;
 import de.structuremade.ms.roleservice.api.json.answer.GetRolesJson;
@@ -40,6 +41,14 @@ public class RoleRoute {
     @PutMapping("/update")
     public void updateRole(@RequestBody UpdateRoleJson roleJson, HttpServletResponse response, HttpServletRequest request){
         switch (roleService.updateRole(roleJson.getId(), roleJson.getName(), roleJson.getPermissions(), jwtUtil.extractSpecialClaim(request.getHeader("Authorization").substring(7), "schoolid"))){
+            case 0 -> response.setStatus(HttpStatus.NOT_FOUND.value());
+            case 1 -> response.setStatus(HttpStatus.OK.value());
+            case 2 -> response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+    @PutMapping("set")
+    public void setRole(@RequestBody SetRoleJson role, HttpServletResponse response, HttpServletRequest request){
+        switch (roleService.setRole(role.getId(), jwtUtil.extractSpecialClaim(request.getHeader("Authorization").substring(7), "schoolid"), role.getRoles())){
             case 0 -> response.setStatus(HttpStatus.NOT_FOUND.value());
             case 1 -> response.setStatus(HttpStatus.OK.value());
             case 2 -> response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
