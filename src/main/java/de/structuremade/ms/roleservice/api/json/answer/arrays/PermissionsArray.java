@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PermissionsArray {
 
-    public PermissionsArray(Permissions permissionsArray){
+    public PermissionsArray(Permissions permissionsArray) {
         this.id = permissionsArray.getId();
         this.name = permissionsArray.getName();
     }

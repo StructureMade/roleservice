@@ -45,7 +45,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
             MissingServletRequestParameterException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
         String error = ex.getParameterName() + " parameter is missing";
-       ApiError apiError =
+        ApiError apiError =
                 new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage());
         return new ResponseEntity<Object>(
                 apiError, new HttpHeaders(), apiError.getHttpStatus());
@@ -71,7 +71,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         String error =
                 ex.getName() + " should be of type " + ex.getRequiredType().getName();
 
-      ApiError apiError =
+        ApiError apiError =
                 new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage());
         return new ResponseEntity<Object>(
                 apiError, new HttpHeaders(), apiError.getHttpStatus());
