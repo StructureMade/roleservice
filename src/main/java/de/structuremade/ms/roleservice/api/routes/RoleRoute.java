@@ -53,6 +53,7 @@ public class RoleRoute {
             case 0 -> response.setStatus(HttpStatus.NOT_FOUND.value());
             case 1 -> response.setStatus(HttpStatus.OK.value());
             case 2 -> response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            case 3 -> response.setStatus(HttpStatus.BAD_REQUEST.value());
         }
     }
 

@@ -48,6 +48,11 @@ public class User {
     @Column
     private String lastSchool;
 
+    @ManyToMany(targetEntity = School.class)
+    @JoinTable(name = "userschools", schema = "services", joinColumns = @JoinColumn(name = "userid", foreignKey = @ForeignKey(name = "fk_userid"))
+            , inverseJoinColumns = @JoinColumn(name = "school", foreignKey = @ForeignKey(name = "fk_school")))
+    private List<School> schools = new ArrayList<>();
+
     @ManyToMany(targetEntity = Role.class)
     @JoinTable(name = "userroles", schema = "services", joinColumns = @JoinColumn(name = "userid", foreignKey = @ForeignKey(name = "fk_userid"))
             , inverseJoinColumns = @JoinColumn(name = "roleid", foreignKey = @ForeignKey(name = "fk_roleid")))

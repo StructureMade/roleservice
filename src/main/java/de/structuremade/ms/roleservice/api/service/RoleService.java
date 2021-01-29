@@ -1,13 +1,12 @@
 package de.structuremade.ms.roleservice.api.service;
 
-import de.structuremade.ms.roleservice.api.json.SetRoleJson;
+import de.structuremade.ms.roleservice.api.json.CreateRoleJson;
 import de.structuremade.ms.roleservice.api.json.answer.GetAllPermissions;
 import de.structuremade.ms.roleservice.api.json.answer.GetRolesJson;
 import de.structuremade.ms.roleservice.api.json.answer.arrays.PermissionsArray;
 import de.structuremade.ms.roleservice.api.json.answer.arrays.RoleArray;
-import de.structuremade.ms.roleservice.util.database.entity.Permissions;
-import de.structuremade.ms.roleservice.api.json.CreateRoleJson;
 import de.structuremade.ms.roleservice.util.JWTUtil;
+import de.structuremade.ms.roleservice.util.database.entity.Permissions;
 import de.structuremade.ms.roleservice.util.database.entity.Role;
 import de.structuremade.ms.roleservice.util.database.entity.School;
 import de.structuremade.ms.roleservice.util.database.entity.User;
@@ -18,9 +17,7 @@ import de.structuremade.ms.roleservice.util.database.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +46,6 @@ public class RoleService {
             List<Permissions> permissionList = new ArrayList<>();
             role.setName(roleJson.getName());
             School school = schoolRepository.getOne(jwtUtil.extractSpecialClaim(jwt, "schoolid"));
-            System.out.println(school.getName());
             role.setSchool(school);
             for (String permission : roleJson.getPermissions()) {
                 Permissions perm = permissionRepository.getOne(permission);
@@ -108,9 +104,9 @@ public class RoleService {
     @Transactional
     public Object getAllRoles(String schoolid) {
         GetRolesJson getRolesJson = new GetRolesJson();
-        School school = schoolRepository.getOne(schoolid);
         List<RoleArray> roles = new ArrayList<>();
         try {
+            School school = schoolRepository.getOne(schoolid);
             for (Role schoolRole : school.getRoles()) {
                 RoleArray role = new RoleArray();
                 role.setId(schoolRole.getId());
@@ -161,6 +157,8 @@ public class RoleService {
             } catch (Exception e) {
                 return 0;
             }
+            if (!user.getSchools().get(0).getId().equals(schoolid)) return 3;
+
             List<Role> userRoles = user.getRoles();
             School school = schoolRepository.getOne(schoolid);
             List<Role> schoolRoles = school.getRoles();
@@ -172,6 +170,7 @@ public class RoleService {
                     }
                 }
             }
+            user.setRoles(userRoles);
             return 1;
         } catch (Exception e) {
             e.printStackTrace();
